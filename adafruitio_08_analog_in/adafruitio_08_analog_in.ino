@@ -63,19 +63,19 @@ void loop() {
   io.run();
 
   // grab the current state of the photocell
-  current = analogRead(PHOTOCELL_PIN);
+  porcentaje_humedad = (100.00 - map(analogRead(HUMEDAD_PIN), 0, 1023.00, 0 , 100.00));
 
   // return if the value hasn't changed
-  if(current == last)
+  if(porcentaje_humedad == last)
     return;
 
   // save the current state to the analog feed
   Serial.print("sending -> ");
-  Serial.println(current);
-  analog->save(current);
+  Serial.println(porcentaje_humedad);
+  Humedad->save(porcentaje_humedad);
 
   // store last photocell state
-  last = current;
+  last = porcentaje_humedad;
 
   // wait three seconds (1000 milliseconds == 1 second)
   //
@@ -83,3 +83,17 @@ void loop() {
   // instead of tracking millis()
   delay(3000);
 }
+
+void handleMessage(AdafruitIO_Data *data) {
+
+  Serial.print("received <- ");
+
+  if(data->toPinLevel() == HIGH)
+    Serial.println("HIGH");
+  else
+    Serial.println("LOW");
+
+  // write the current state to the led
+  digitalWrite(MOTOR_PIN, data->toPinLevel());
+
+} 
