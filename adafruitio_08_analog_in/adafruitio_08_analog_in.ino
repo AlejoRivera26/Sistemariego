@@ -21,16 +21,20 @@
 /************************ Example Starts Here *******************************/
 
 // analog pin 0
-#define PHOTOCELL_PIN A0
+#define HUMEDAD_PIN A0
+#define MOTOR_PIN 5
 
 // photocell state
-int current = 0;
+int porcentaje_humedad = 0;
 int last = -1;
 
 // set up the 'analog' feed
-AdafruitIO_Feed *analog = io.feed("analog");
+AdafruitIO_Feed *Humedad = io.feed("Humedad");
+AdafruitIO_Feed *Riego = io.feed("Riego");
 
 void setup() {
+
+  pinMode(MOTOR_PIN, OUTPUT);
 
   // start the serial connection
   Serial.begin(115200);
@@ -42,6 +46,8 @@ void setup() {
   Serial.print("Connecting to Adafruit IO");
   io.connect();
 
+  Riego->onMessage(handleMessage);
+
   // wait for a connection
   while(io.status() < AIO_CONNECTED) {
     Serial.print(".");
@@ -51,6 +57,7 @@ void setup() {
   // we are connected
   Serial.println();
   Serial.println(io.statusText());
+  Riego->get();
 
 }
 
